@@ -123,7 +123,7 @@ export default function RoleEditorPage({ params }: { params: Promise<{ tenantId:
           <PermissionChecklist value={permissions} onChange={setPermissions} />
         </CardContent>
         <CardFooter>
-          <Button onClick={handleSave} disabled={!isDirty || updateRole.isPending}>
+          <Button onClick={handleSave} className="gap-2" disabled={!isDirty || updateRole.isPending}>
             {updateRole.isPending && <Spinner />}
             Save changes
           </Button>

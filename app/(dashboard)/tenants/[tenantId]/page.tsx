@@ -156,7 +156,7 @@ export default function TenantOverviewPage({ params }: { params: Promise<{ tenan
             </FieldGroup>
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={!isDirty || updateTenant.isPending}>
+            <Button type="submit" className="gap-2" disabled={!isDirty || updateTenant.isPending}>
               {updateTenant.isPending && <Spinner />}
               Save changes
             </Button>
