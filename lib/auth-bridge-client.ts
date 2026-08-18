@@ -6,7 +6,7 @@
 // non-2xx response so callers (React Query mutations) get a clean message.
 //
 // Every call carries the `x-panel-request: 1` header the Route Handlers
-// check as a lightweight CSRF guard (see middleware.ts / each route.ts).
+// check as a lightweight CSRF guard (see proxy.ts / each route.ts).
 
 import type {
   CreateOrganizationInput,
