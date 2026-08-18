@@ -4,7 +4,7 @@ import { checkPanelRequestHeader, requireSessionOrRespond } from "@/lib/api-help
 type RouteContext = { params: Promise<{ tenantId: string }> };
 
 const GITHUB_OWNER = process.env.MOBILE_REPO_OWNER || "magic-webs";
-const GITHUB_REPO = process.env.MOBILE_REPO_NAME || "uj-ramnagar-mobile";
+const GITHUB_REPO = process.env.MOBILE_REPO_NAME || "magic-visit-app";
 const GITHUB_REF = process.env.MOBILE_REPO_REF || "main";
 const WORKFLOW_FILE = "eas-build.yml";
 

@@ -13,4 +13,7 @@ export const queryKeys = {
   tenantConfig: {
     detail: (tenantId: string) => ["tenant-config", tenantId] as const,
   },
+  exportRuns: {
+    list: (tenantId: string) => ["export-runs", tenantId] as const,
+  },
 };

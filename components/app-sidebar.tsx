@@ -14,6 +14,7 @@ import {
   MonitorIcon,
   MoonIcon,
   PaletteIcon,
+  RocketIcon,
   ShieldCheckIcon,
   SunIcon,
 } from "lucide-react";
@@ -49,6 +50,7 @@ const TENANT_NAV_ITEMS = [
   { href: "/roles", label: "Roles", icon: ShieldCheckIcon },
   { href: "/theme", label: "Theme", icon: PaletteIcon },
   { href: "/branding", label: "Branding", icon: ImageIcon },
+  { href: "/export", label: "Export", icon: RocketIcon },
   { href: "/analytics", label: "Analytics", icon: BarChart3Icon },
 ];
 

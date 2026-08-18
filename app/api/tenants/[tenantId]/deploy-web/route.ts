@@ -4,7 +4,7 @@ import { checkPanelRequestHeader, requireSessionOrRespond } from "@/lib/api-help
 type RouteContext = { params: Promise<{ tenantId: string }> };
 
 const GITHUB_OWNER = process.env.MOBILE_REPO_OWNER || "magic-webs";
-const GITHUB_REPO = process.env.MOBILE_REPO_NAME || "uj-ramnagar-mobile";
+const GITHUB_REPO = process.env.MOBILE_REPO_NAME || "magic-visit-app";
 const GITHUB_REF = process.env.MOBILE_REPO_REF || "main";
 const WORKFLOW_FILE = "web-deploy.yml";
 
@@ -31,10 +31,14 @@ export async function POST(request: Request, { params }: RouteContext) {
 
   const body = await request.json().catch(() => null);
   const tenantSlug = typeof body?.tenantSlug === "string" ? body.tenantSlug : undefined;
-  const cloudflareProject = typeof body?.cloudflareProject === "string" ? body.cloudflareProject : "magic-visit-app";
   if (!tenantSlug) {
     return NextResponse.json({ error: "Missing tenantSlug." }, { status: 400 });
   }
+  // Defaults to the tenant's OWN slug, not a single shared project name —
+  // every tenant needs its own Cloudflare Pages project, or they'd overwrite
+  // each other's deployed site on every deploy. Still overridable via the
+  // request body if a tenant's project is deliberately named differently.
+  const cloudflareProject = typeof body?.cloudflareProject === "string" ? body.cloudflareProject : tenantSlug;
 
   const dispatchUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
   const res = await fetch(dispatchUrl, {

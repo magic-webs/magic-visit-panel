@@ -1,14 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Rocket } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field";
 import { LogoUploader } from "@/components/branding/logo-uploader";
 import { LivePreviewLink } from "@/components/branding/live-preview-link";
-import { CreateApkButton } from "@/components/branding/create-apk-button";
 import { useAppearanceContext } from "@/components/theme/appearance-context";
 import { useTenant } from "@/hooks/use-tenants";
 
@@ -59,31 +56,9 @@ export default function BrandingPage({ params }: { params: Promise<{ tenantId: s
         </FieldContent>
       </Field>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {organization ? (
-          <LivePreviewLink tenantId={tenantId} tenantSlug={organization.slug} customDomain={draft.brandingDraft.customDomain} />
-        ) : (
-          <div className="rounded-lg border p-4" />
-        )}
-        <div className="flex flex-col justify-between gap-2 rounded-lg border p-4">
-          <div>
-            <p className="text-sm font-medium">Android build</p>
-            <p className="text-xs text-muted-foreground">
-              Starts/monitors a build on EAS using this project&apos;s existing &quot;preview&quot; profile
-              (internal distribution — installable APK, no store submission).
-            </p>
-          </div>
-          <div>
-            {organization ? (
-              <CreateApkButton tenantId={tenantId} tenantSlug={organization.slug} />
-            ) : (
-              <Button size="sm" disabled>
-                <Rocket className="size-4" /> Create APK
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
+      {organization && (
+        <LivePreviewLink tenantId={tenantId} tenantSlug={organization.slug} customDomain={draft.brandingDraft.customDomain} />
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <LogoUploader
@@ -117,6 +92,11 @@ export default function BrandingPage({ params }: { params: Promise<{ tenantId: s
           onUploaded={(fileId) => draft.updateBranding({ iconFileId: fileId })}
         />
       </div>
+
+      <p className="text-xs text-muted-foreground">
+        Ready to ship this tenant&apos;s app? Head to <span className="font-medium text-foreground">Export</span> to
+        build the APK or deploy the web build.
+      </p>
     </div>
   );
 }

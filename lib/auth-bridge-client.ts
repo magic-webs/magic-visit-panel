@@ -142,3 +142,17 @@ export interface TriggerWebDeployInput {
 export function triggerWebDeploy(tenantId: string, input: TriggerWebDeployInput) {
   return panelFetch<{ ok: true; actionsUrl: string }>(`/api/tenants/${tenantId}/deploy-web`, "POST", input);
 }
+
+export interface RunSummary {
+  id: number;
+  workflow: string;
+  status: string;
+  conclusion: string | null;
+  htmlUrl: string;
+  createdAt: string;
+  displayTitle: string;
+}
+
+export function getExportRuns(tenantId: string) {
+  return panelFetch<{ configured: boolean; runs: RunSummary[]; error?: string }>(`/api/tenants/${tenantId}/export/runs`);
+}
