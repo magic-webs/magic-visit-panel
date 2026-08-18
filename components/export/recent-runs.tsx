@@ -47,22 +47,18 @@ function relativeTime(iso: string): string {
   return `${Math.round(hours / 24)}d ago`;
 }
 
-// Build/deploy history for both eas-build.yml and web-deploy.yml — not
-// filtered to this one tenant (see the API route's own comment for why
-// that isn't reliably possible), but still a genuinely useful "what's
-// happened on CI recently" view, polling every 15s so in-flight runs
-// update without a manual refresh.
-export function RecentRuns({ tenantId }: { tenantId: string }) {
-  const { data, isLoading } = useExportRuns(tenantId);
+// Build/deploy history for both eas-build.yml and web-deploy.yml, filtered
+// to this tenant via each workflow's `run-name:` (see the API route's own
+// comment) — polling every 15s so in-flight runs update without a manual
+// refresh.
+export function RecentRuns({ tenantId, tenantSlug }: { tenantId: string; tenantSlug: string }) {
+  const { data, isLoading } = useExportRuns(tenantId, tenantSlug);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Recent activity</CardTitle>
-        <CardDescription>
-          The last builds and deploys across all tenants — GitHub doesn&apos;t expose which tenant a run was for, so
-          this isn&apos;t filtered to just this one.
-        </CardDescription>
+        <CardDescription>Builds and deploys for this tenant.</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (

@@ -8,14 +8,24 @@ import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AppearanceProvider, PreviewModeProvider, useAppearanceContext, usePreviewMode } from "@/components/theme/appearance-context";
-import { ThemePreview } from "@/components/theme/theme-preview";
+import { AppearanceProvider, PreviewModeProvider, useAppearanceContext } from "@/components/theme/appearance-context";
 import { MobilePreview } from "@/components/theme/mobile-preview";
 
-// A persistent split layout — editor panel (left) + live ThemePreview
+// A persistent split layout — editor panel (left) + live MobilePreview
 // (right) — shared across the Theme and Branding tabs via AppearanceProvider
 // so draft state survives switching tabs. Only Save/Cancel/Revert (wired to
 // PUT /api/tenants/[tenantId]/config) ever makes an edit real.
+//
+// Only the mobile-app preview is shown here now — the generic web-dashboard
+// mockup (ThemePreview) never corresponded to any real deployed surface
+// (the panel's own chrome doesn't need a "preview" of itself), so it was
+// just a second, less accurate approximation alongside the one that
+// actually matters: what a tenant's real installed/deployed app looks like.
+// PreviewModeProvider stays, though — the Theme tab's own Light/Dark
+// Tabs (see theme/page.tsx) still edits both token sets even though
+// MobilePreview only ever renders light mode (the mobile app has no dark
+// mode yet), so that switch is about which tokens you're EDITING, not
+// which the preview shows.
 export default function AppearanceLayout({ children, params }: { children: React.ReactNode; params: Promise<{ tenantId: string }> }) {
   const { tenantId } = React.use(params);
   return (
@@ -31,9 +41,7 @@ function AppearanceShell({ tenantId, children }: { tenantId: string; children: R
   const pathname = usePathname();
   const router = useRouter();
   const draft = useAppearanceContext();
-  const { previewMode } = usePreviewMode();
   const [saveError, setSaveError] = React.useState<string | null>(null);
-  const [surface, setSurface] = React.useState<"mobile" | "web">("mobile");
 
   const activeTab = pathname.endsWith("/branding") ? "branding" : "theme";
 
@@ -89,28 +97,12 @@ function AppearanceShell({ tenantId, children }: { tenantId: string; children: R
       </div>
 
       <div className="flex-1 lg:sticky lg:top-6">
-        <Tabs value={surface} onValueChange={(value) => setSurface(value as "mobile" | "web")} className="mb-3 items-center">
-          <TabsList>
-            <TabsTrigger value="mobile">Mobile app</TabsTrigger>
-            <TabsTrigger value="web">Web (panel)</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        {surface === "mobile" ? (
-          <MobilePreview
-            theme={draft.themeDraft}
-            appName={draft.brandingDraft.appName || "Your App"}
-            shortName={draft.brandingDraft.shortName || undefined}
-            logoUrl={draft.previews.logoLight ?? undefined}
-          />
-        ) : (
-          <ThemePreview
-            theme={draft.themeDraft}
-            mode={previewMode}
-            appName={draft.brandingDraft.appName || "Your App"}
-            logoUrl={draft.previews.logoLight ?? undefined}
-          />
-        )}
+        <MobilePreview
+          theme={draft.themeDraft}
+          appName={draft.brandingDraft.appName || "Your App"}
+          shortName={draft.brandingDraft.shortName || undefined}
+          logoUrl={draft.resolvedPreviews.logoLight}
+        />
       </div>
     </div>
   );

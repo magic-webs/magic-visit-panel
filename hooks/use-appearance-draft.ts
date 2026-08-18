@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { db } from "@/lib/instant";
 import { useTenantConfig, useSaveTenantConfig } from "@/hooks/use-tenant-config";
 import { useThemePreview, DEFAULT_THEME_DRAFT, type ThemeDraft } from "@/hooks/use-theme-preview";
 import type { TenantConfigInput } from "@/lib/types";
@@ -79,6 +80,26 @@ export function useAppearanceDraft(tenantId: string) {
     setPreviews((prev) => ({ ...prev, [slot]: url }));
   }, []);
 
+  // `previews` above only ever holds a blob URL for a file uploaded THIS
+  // session (LogoUploader.onPreview) — on a fresh page load, nothing sets
+  // it, so anything reading `previews.logoLight` directly (the Mobile/Web
+  // live-preview panes) saw no logo at all even though a real one was
+  // already saved, until you re-uploaded. Resolve the actual saved file's
+  // URL the same way LogoUploader's own thumbnail does (a $files lookup by
+  // id) and fall back to that when there's no in-flight upload preview, so
+  // "resolvedPreviews" is always what should actually be shown.
+  const fileIds = [brandingDraft.logoLightFileId, brandingDraft.logoDarkFileId, brandingDraft.iconFileId].filter(
+    (fid): fid is string => Boolean(fid),
+  );
+  const { data: filesData } = db.useQuery(fileIds.length > 0 ? { $files: { $: { where: { id: { $in: fileIds } } } } } : null);
+  const savedUrlById = new Map((filesData?.$files ?? []).map((f) => [f.id, f.url as string]));
+
+  const resolvedPreviews: Partial<Record<LogoSlot, string>> = {
+    logoLight: previews.logoLight ?? (brandingDraft.logoLightFileId ? savedUrlById.get(brandingDraft.logoLightFileId) : undefined),
+    logoDark: previews.logoDark ?? (brandingDraft.logoDarkFileId ? savedUrlById.get(brandingDraft.logoDarkFileId) : undefined),
+    icon: previews.icon ?? (brandingDraft.iconFileId ? savedUrlById.get(brandingDraft.iconFileId) : undefined),
+  };
+
   const isDirty = theme.isDirty || JSON.stringify(brandingDraft) !== JSON.stringify(brandingBaseline);
 
   const reset = React.useCallback(() => {
@@ -119,6 +140,7 @@ export function useAppearanceDraft(tenantId: string) {
     brandingDraft,
     updateBranding,
     previews,
+    resolvedPreviews,
     setPreview,
     isDirty,
     reset,

@@ -29,6 +29,11 @@ export interface MobileResolvedBrand {
   gradientPrimary: [string, string, string];
   goldBackground: string;
   goldBorder: string;
+  // The solid "lip" color sat behind the button face at rest — see
+  // magic-visit-app/components/ui/Button.tsx's own comment on this: no
+  // shadows, just a darker solid-color layer offset below the face
+  // (`edge` there). Approximated here as a plain CSS box-shadow.
+  buttonEdge: string;
 }
 
 export function deriveMobileBrand(base: ThemeBaseTokens): MobileResolvedBrand {
@@ -36,11 +41,13 @@ export function deriveMobileBrand(base: ThemeBaseTokens): MobileResolvedBrand {
   const secondary = parseOklch(base.secondary);
   const hover = lighten(primary, 0.05);
   const light = lighten(primary, 0.12);
+  const edge = lighten(primary, -0.12);
   const gold = deriveGoldScale(secondary);
 
   return {
     gradientPrimary: [oklchToHex(primary), oklchToHex(hover), oklchToHex(light)],
     goldBackground: oklchToHex(gold["50"]),
     goldBorder: oklchToHex(gold.border),
+    buttonEdge: oklchToHex(edge),
   };
 }

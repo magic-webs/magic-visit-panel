@@ -153,6 +153,8 @@ export interface RunSummary {
   displayTitle: string;
 }
 
-export function getExportRuns(tenantId: string) {
-  return panelFetch<{ configured: boolean; runs: RunSummary[]; error?: string }>(`/api/tenants/${tenantId}/export/runs`);
+export function getExportRuns(tenantId: string, tenantSlug: string) {
+  return panelFetch<{ configured: boolean; runs: RunSummary[]; error?: string }>(
+    `/api/tenants/${tenantId}/export/runs?tenantSlug=${encodeURIComponent(tenantSlug)}`,
+  );
 }

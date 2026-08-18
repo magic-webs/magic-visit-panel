@@ -4,10 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getExportRuns } from "@/lib/auth-bridge-client";
 import { queryKeys } from "@/lib/query-keys";
 
-export function useExportRuns(tenantId: string) {
+export function useExportRuns(tenantId: string, tenantSlug: string) {
   return useQuery({
     queryKey: queryKeys.exportRuns.list(tenantId),
-    queryFn: () => getExportRuns(tenantId),
+    queryFn: () => getExportRuns(tenantId, tenantSlug),
     // Polls while any run might still be in flight — cheap, and gives the
     // "tracking" table a live feel without needing a webhook/callback from
     // GitHub Actions back into the panel.

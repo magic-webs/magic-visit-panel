@@ -62,7 +62,7 @@ export default function ExportPage({ params }: { params: Promise<{ tenantId: str
         </Card>
       </div>
 
-      <RecentRuns tenantId={tenantId} />
+      <RecentRuns tenantId={tenantId} tenantSlug={organization.slug} />
     </div>
   );
 }

@@ -26,17 +26,19 @@ interface GithubWorkflowRun {
   display_title?: string;
 }
 
-// Best-effort build/deploy history — NOT scoped to this specific tenant.
-// GitHub's runs API doesn't expose the workflow_dispatch input values
-// (tenant_slug, etc.) a run was started with, so there's no reliable way to
-// filter "runs for tenant X" server-side; this shows the N most recent runs
-// of both workflows across every tenant instead, which is still useful
-// (who deployed what, when, did it succeed) even though it isn't
-// per-tenant-filtered. `displayTitle` at least usually includes the run's
-// triggering ref/input summary GitHub generates.
-export async function GET() {
+// Build/deploy history, filtered to the requesting tenant. GitHub's runs API
+// doesn't expose workflow_dispatch input values anywhere queryable, so
+// both .github/workflows/*.yml declare a `run-name: "${{ inputs.tenant_slug
+// }} — ..."` — that becomes each run's `display_title`, which this route
+// matches against `?tenantSlug=`. Manually-triggered runs (from the GitHub
+// UI, where someone might type the slug differently, or skip run-name
+// entirely on an older run) won't match perfectly, but every run this
+// panel itself dispatches will.
+export async function GET(request: Request) {
   const { session, response } = await requireSessionOrRespond();
   if (!session) return response;
+
+  const tenantSlug = new URL(request.url).searchParams.get("tenantSlug");
 
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
@@ -47,7 +49,7 @@ export async function GET() {
     const results = await Promise.all(
       WORKFLOW_FILES.map((file) =>
         fetch(
-          `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${file}/runs?per_page=8`,
+          `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${file}/runs?per_page=20`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -65,6 +67,11 @@ export async function GET() {
       if (!res.ok) continue;
       const data = (await res.json()) as { workflow_runs?: GithubWorkflowRun[] };
       for (const run of data.workflow_runs ?? []) {
+        const displayTitle = run.display_title ?? run.name;
+        // run-name format is "<tenant_slug> — ...", so match on that exact
+        // leading segment rather than a loose substring (a slug could
+        // otherwise accidentally match as a substring of a different one).
+        if (tenantSlug && !displayTitle.startsWith(`${tenantSlug} —`)) continue;
         runs.push({
           id: run.id,
           workflow: run.name,
@@ -72,7 +79,7 @@ export async function GET() {
           conclusion: run.conclusion,
           htmlUrl: run.html_url,
           createdAt: run.created_at,
-          displayTitle: run.display_title ?? run.name,
+          displayTitle,
         });
       }
     }

@@ -53,7 +53,12 @@ export function MobilePreview({
     try {
       return deriveMobileBrand(theme.light);
     } catch {
-      return { gradientPrimary: ["#097969", "#0a9070", "#0bb885"] as [string, string, string], goldBackground: "#fdf8ed", goldBorder: "#e8d98a" };
+      return {
+        gradientPrimary: ["#097969", "#0a9070", "#0bb885"] as [string, string, string],
+        goldBackground: "#fdf8ed",
+        goldBorder: "#e8d98a",
+        buttonEdge: "#065c50",
+      };
     }
   }, [theme.light]);
 
@@ -88,8 +93,18 @@ export function MobilePreview({
           <div className="relative h-[600px] w-[300px] overflow-hidden rounded-[2rem] bg-white">
             <div className="absolute top-0 left-1/2 z-20 h-5 w-28 -translate-x-1/2 rounded-b-xl bg-neutral-900" />
 
-            {screen === "login" && <LoginScreen gradientCss={gradientCss} appName={appName} shortName={shortName} logoUrl={logoUrl} />}
-            {screen === "dashboard" && <DashboardScreen gradientCss={gradientCss} primary={brand.gradientPrimary[0]} goldBg={brand.goldBackground} goldBorder={brand.goldBorder} />}
+            {screen === "login" && (
+              <LoginScreen gradientCss={gradientCss} buttonEdge={brand.buttonEdge} appName={appName} shortName={shortName} logoUrl={logoUrl} />
+            )}
+            {screen === "dashboard" && (
+              <DashboardScreen
+                gradientCss={gradientCss}
+                primary={brand.gradientPrimary[0]}
+                buttonEdge={brand.buttonEdge}
+                goldBg={brand.goldBackground}
+                goldBorder={brand.goldBorder}
+              />
+            )}
             {screen === "profile" && <ProfileScreen primary={brand.gradientPrimary[0]} appName={appName} goldBorder={brand.goldBorder} />}
           </div>
         </div>
@@ -104,11 +119,13 @@ export function MobilePreview({
 
 function LoginScreen({
   gradientCss,
+  buttonEdge,
   appName,
   shortName,
   logoUrl,
 }: {
   gradientCss: string;
+  buttonEdge: string;
   appName: string;
   shortName?: string;
   logoUrl?: string;
@@ -149,7 +166,13 @@ function LoginScreen({
           </div>
         </div>
 
-        <div className="mt-4 rounded-xl py-2.5 text-center text-sm font-semibold text-white" style={{ backgroundImage: gradientCss }}>
+        {/* The real Button component's "3D lip" (see components/ui/Button.tsx
+            there) is a solid edge color sat behind the face, not a shadow —
+            a plain offset box-shadow is the closest static CSS equivalent. */}
+        <div
+          className="mt-5 mb-1.5 rounded-full py-2.5 text-center text-sm font-semibold text-white"
+          style={{ backgroundImage: gradientCss, boxShadow: `0 4px 0 0 ${buttonEdge}` }}
+        >
           Sign in
         </div>
       </div>
@@ -162,7 +185,19 @@ const STAT_TILES = [
   { label: "Conversion", value: "24.6%" },
 ];
 
-function DashboardScreen({ gradientCss, primary, goldBg, goldBorder }: { gradientCss: string; primary: string; goldBg: string; goldBorder: string }) {
+function DashboardScreen({
+  gradientCss,
+  primary,
+  buttonEdge,
+  goldBg,
+  goldBorder,
+}: {
+  gradientCss: string;
+  primary: string;
+  buttonEdge: string;
+  goldBg: string;
+  goldBorder: string;
+}) {
   return (
     <div className="flex h-full flex-col" style={{ backgroundColor: goldBg }}>
       <div className="relative overflow-hidden rounded-b-3xl px-5 pt-14 pb-6" style={{ backgroundImage: gradientCss }}>
@@ -185,8 +220,11 @@ function DashboardScreen({ gradientCss, primary, goldBg, goldBorder }: { gradien
           ))}
         </div>
 
-        <div className="flex gap-2">
-          <div className="flex-1 rounded-full py-2 text-center text-[11px] font-semibold text-white" style={{ backgroundColor: primary }}>
+        <div className="flex gap-2 pb-1.5">
+          <div
+            className="flex-1 rounded-full py-2 text-center text-[11px] font-semibold text-white"
+            style={{ backgroundColor: primary, boxShadow: `0 3px 0 0 ${buttonEdge}` }}
+          >
             Add visitor
           </div>
           <div className="flex-1 rounded-full border py-2 text-center text-[11px] font-semibold" style={{ borderColor: primary, color: primary }}>
