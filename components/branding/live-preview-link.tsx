@@ -1,40 +1,39 @@
 "use client";
 
 import * as React from "react";
-import { ExternalLink, Globe, MonitorSmartphone } from "lucide-react";
+import { ExternalLink, Globe, CloudCog } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-// Local Expo web dev server default (`bunx expo start --web`, SDK 50+ unifies
-// on Metro's own port). Overridable per-machine via NEXT_PUBLIC_MOBILE_WEB_URL
-// since a teammate's dev server may be on a different port/host.
-const LOCAL_WEB_URL = process.env.NEXT_PUBLIC_MOBILE_WEB_URL || "http://localhost:8081";
-
 /**
  * Resolves and shows the URL this tenant's web/PWA build is actually
- * reachable at right now: the custom domain once one's configured and
- * deployed, or the local Expo web dev server in the meantime — so there's
- * always something to click through to while testing, not just a bare
- * text field. Triggering an actual deploy lives on the Export page now
- * (see components/export/deploy-web-button.tsx) — this is preview-only.
+ * reachable at: the custom domain once one's configured (DNS pointed at the
+ * deployed build), or otherwise the tenant's Cloudflare Pages project URL —
+ * `web-deploy.yml` deploys every tenant to its own project named after its
+ * slug (see app/api/tenants/[tenantId]/deploy-web/route.ts's
+ * `cloudflareProject` default), so that URL is a deterministic
+ * `https://<slug>.pages.dev` with nothing to look up. This is the same link
+ * shown after triggering a deploy from the Export page (see
+ * components/export/deploy-web-button.tsx) — it just stays visible here
+ * too, since it doesn't depend on that mutation's transient success state.
  */
-export function LivePreviewLink({ customDomain }: { tenantId?: string; tenantSlug?: string; customDomain: string }) {
+export function LivePreviewLink({ tenantSlug, customDomain }: { tenantId?: string; tenantSlug: string; customDomain: string }) {
   const trimmed = customDomain.trim();
   const hasDomain = trimmed.length > 0;
-  const url = hasDomain ? `https://${trimmed}` : LOCAL_WEB_URL;
+  const url = hasDomain ? `https://${trimmed}` : `https://${tenantSlug}.pages.dev`;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          {hasDomain ? <Globe className="size-4" /> : <MonitorSmartphone className="size-4" />}
-          Live preview
+          {hasDomain ? <Globe className="size-4" /> : <CloudCog className="size-4" />}
+          Live web / PWA
         </CardTitle>
         <CardDescription>
           {hasDomain
             ? "This tenant's custom domain, once DNS is pointed at the deployed web build."
-            : "No custom domain set yet — this opens the local Expo web dev server instead."}
+            : "No custom domain set — this is the tenant's Cloudflare Pages project. Live once a web deploy has run (see the Export page)."}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
@@ -42,7 +41,7 @@ export function LivePreviewLink({ customDomain }: { tenantId?: string; tenantSlu
           <code className="min-w-0 flex-1 truncate rounded-md bg-muted px-2 py-1 text-sm">{url}</code>
           {!hasDomain && (
             <Badge variant="secondary" className="shrink-0">
-              local only
+              pages.dev
             </Badge>
           )}
         </div>

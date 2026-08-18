@@ -6,11 +6,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CreateApkButton } from "@/components/export/create-apk-button";
 import { DeployWebButton } from "@/components/export/deploy-web-button";
 import { RecentRuns } from "@/components/export/recent-runs";
+import { LivePreviewLink } from "@/components/branding/live-preview-link";
 import { useTenant } from "@/hooks/use-tenants";
+import { useTenantThemeLive } from "@/hooks/use-tenant-config";
 
 export default function ExportPage({ params }: { params: Promise<{ tenantId: string }> }) {
   const { tenantId } = React.use(params);
   const { organization, isLoading } = useTenant(tenantId);
+  const { branding } = useTenantThemeLive(tenantId);
 
   if (isLoading || !organization) {
     return (
@@ -61,6 +64,8 @@ export default function ExportPage({ params }: { params: Promise<{ tenantId: str
           </CardContent>
         </Card>
       </div>
+
+      <LivePreviewLink tenantSlug={organization.slug} customDomain={branding?.customDomain ?? ""} />
 
       <RecentRuns tenantId={tenantId} tenantSlug={organization.slug} />
     </div>

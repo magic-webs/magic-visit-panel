@@ -31,6 +31,10 @@ export function DeployWebButton({ tenantId, tenantSlug }: { tenantId: string; te
             Deploy started to Cloudflare Pages project <code>{tenantSlug}</code>.{" "}
             <a href={deploy.data.actionsUrl} target="_blank" rel="noreferrer" className="underline">
               Watch its progress
+            </a>{" "}
+            — once it finishes, the site is live at{" "}
+            <a href={`https://${tenantSlug}.pages.dev`} target="_blank" rel="noreferrer" className="underline">
+              {tenantSlug}.pages.dev
             </a>
             .
           </AlertDescription>
