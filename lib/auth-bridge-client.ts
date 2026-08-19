@@ -153,3 +153,25 @@ export function getExportRuns(tenantId: string, tenantSlug: string) {
     `/api/tenants/${tenantId}/export/runs?tenantSlug=${encodeURIComponent(tenantSlug)}`,
   );
 }
+
+// --- Custom domains (Cloudflare Pages) ------------------------------------
+
+export interface PagesDomainSummary {
+  id: string;
+  name: string;
+  status: string;
+  validation_data?: { method?: string; status?: string; error_message?: string; txt_name?: string; txt_value?: string };
+  verification_data?: { status?: string; error_message?: string };
+}
+
+export function listTenantDomains(tenantId: string) {
+  return panelFetch<{ configured: boolean; domains: PagesDomainSummary[] }>(`/api/tenants/${tenantId}/domain`);
+}
+
+export function addTenantDomain(tenantId: string, domain: string) {
+  return panelFetch<{ domain: PagesDomainSummary }>(`/api/tenants/${tenantId}/domain`, "POST", { domain });
+}
+
+export function removeTenantDomain(tenantId: string, domain: string) {
+  return panelFetch<{ ok: true }>(`/api/tenants/${tenantId}/domain?domain=${encodeURIComponent(domain)}`, "DELETE");
+}

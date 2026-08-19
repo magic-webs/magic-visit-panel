@@ -1,10 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { ExternalLink, Globe, CloudCog } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 // Custom domain if set, else the tenant's deterministic Cloudflare Pages URL
 // (`https://<slug>.pages.dev` — web-deploy.yml names the project after the slug).
@@ -29,13 +27,8 @@ export function LivePreviewLink({ tenantSlug, customDomain }: { tenantId?: strin
       <CardContent className="flex flex-col gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <code className="min-w-0 flex-1 truncate rounded-md bg-muted px-2 py-1 text-sm">{url}</code>
-          {!hasDomain && (
-            <Badge variant="secondary" className="shrink-0">
-              pages.dev
-            </Badge>
-          )}
         </div>
-        <Button variant="outline" size="sm" className="self-start" render={<a href={url} target="_blank" rel="noreferrer" />}>
+        <Button variant="outline" size="sm" className="ml-auto" render={<a href={url} target="_blank" rel="noreferrer" />}>
           Open <ExternalLink className="size-3.5" />
         </Button>
       </CardContent>

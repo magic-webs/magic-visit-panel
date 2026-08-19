@@ -96,10 +96,7 @@ export default function TenantOverviewPage({ params }: { params: Promise<{ tenan
       <Card>
         <CardHeader>
           <CardTitle>Business details</CardTitle>
-          <CardDescription>
-            Slug <code className="rounded bg-muted px-1 py-0.5">{organization.slug}</code> and auth domain{" "}
-            <code className="rounded bg-muted px-1 py-0.5">{organization.authEmailDomain}</code> are fixed at creation.
-          </CardDescription>
+          <CardDescription>Slug <code className="rounded bg-muted px-1 py-0.5">{organization.slug}</code></CardDescription>
         </CardHeader>
         <form onSubmit={onSubmit} noValidate>
           <CardContent>
@@ -156,7 +153,7 @@ export default function TenantOverviewPage({ params }: { params: Promise<{ tenan
             </FieldGroup>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="gap-2" disabled={!isDirty || updateTenant.isPending}>
+            <Button type="submit" className="mt-2" disabled={!isDirty || updateTenant.isPending}>
               {updateTenant.isPending && <Spinner />}
               Save changes
             </Button>

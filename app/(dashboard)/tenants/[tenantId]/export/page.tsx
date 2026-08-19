@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CreateApkButton } from "@/components/export/create-apk-button";
 import { DeployWebButton } from "@/components/export/deploy-web-button";
 import { RecentRuns } from "@/components/export/recent-runs";
+import { CustomDomainCard } from "@/components/export/custom-domain-card";
 import { LivePreviewLink } from "@/components/branding/live-preview-link";
 import { useTenant } from "@/hooks/use-tenants";
 import { useTenantThemeLive } from "@/hooks/use-tenant-config";
@@ -66,6 +67,8 @@ export default function ExportPage({ params }: { params: Promise<{ tenantId: str
       </div>
 
       <LivePreviewLink tenantSlug={organization.slug} customDomain={branding?.customDomain ?? ""} />
+
+      <CustomDomainCard tenantId={tenantId} tenantSlug={organization.slug} />
 
       <RecentRuns tenantId={tenantId} tenantSlug={organization.slug} />
     </div>

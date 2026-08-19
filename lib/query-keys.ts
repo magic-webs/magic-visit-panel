@@ -15,4 +15,7 @@ export const queryKeys = {
   exportRuns: {
     list: (tenantId: string) => ["export-runs", tenantId] as const,
   },
+  tenantDomains: {
+    list: (tenantId: string) => ["tenant-domains", tenantId] as const,
+  },
 };

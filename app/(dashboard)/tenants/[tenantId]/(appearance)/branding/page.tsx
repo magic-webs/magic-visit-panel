@@ -23,7 +23,7 @@ export default function BrandingPage({ params }: { params: Promise<{ tenantId: s
             id="appName"
             value={draft.brandingDraft.appName}
             onChange={(e) => draft.updateBranding({ appName: e.target.value })}
-            placeholder="Urmil Jewellers"
+            placeholder="Enter app name"
           />
         </FieldContent>
       </Field>
@@ -35,7 +35,7 @@ export default function BrandingPage({ params }: { params: Promise<{ tenantId: s
             id="shortName"
             value={draft.brandingDraft.shortName}
             onChange={(e) => draft.updateBranding({ shortName: e.target.value })}
-            placeholder="Urmil"
+            placeholder="Enter short name"
           />
         </FieldContent>
       </Field>
