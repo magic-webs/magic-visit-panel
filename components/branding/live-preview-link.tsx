@@ -6,18 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-/**
- * Resolves and shows the URL this tenant's web/PWA build is actually
- * reachable at: the custom domain once one's configured (DNS pointed at the
- * deployed build), or otherwise the tenant's Cloudflare Pages project URL —
- * `web-deploy.yml` deploys every tenant to its own project named after its
- * slug (see app/api/tenants/[tenantId]/deploy-web/route.ts's
- * `cloudflareProject` default), so that URL is a deterministic
- * `https://<slug>.pages.dev` with nothing to look up. This is the same link
- * shown after triggering a deploy from the Export page (see
- * components/export/deploy-web-button.tsx) — it just stays visible here
- * too, since it doesn't depend on that mutation's transient success state.
- */
+// Custom domain if set, else the tenant's deterministic Cloudflare Pages URL
+// (`https://<slug>.pages.dev` — web-deploy.yml names the project after the slug).
 export function LivePreviewLink({ tenantSlug, customDomain }: { tenantId?: string; tenantSlug: string; customDomain: string }) {
   const trimmed = customDomain.trim();
   const hasDomain = trimmed.length > 0;

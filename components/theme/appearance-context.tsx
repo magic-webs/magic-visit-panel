@@ -5,10 +5,8 @@ import { useAppearanceDraft, type AppearanceDraft } from "@/hooks/use-appearance
 
 const AppearanceContext = React.createContext<AppearanceDraft | null>(null);
 
-// Instantiated ONCE by the (appearance) split layout so draft state (both
-// theme AND branding) survives switching between the Theme and Branding
-// tabs — each tab page just reads this context instead of re-running
-// useAppearanceDraft itself, which would otherwise reset on navigation.
+// Instantiated once by the (appearance) layout so draft state survives
+// switching Theme/Branding tabs instead of resetting on navigation.
 export function AppearanceProvider({ tenantId, children }: { tenantId: string; children: React.ReactNode }) {
   const draft = useAppearanceDraft(tenantId);
   return <AppearanceContext.Provider value={draft}>{children}</AppearanceContext.Provider>;
@@ -29,10 +27,8 @@ export interface PreviewModeState {
 
 const PreviewModeContext = React.createContext<PreviewModeState | null>(null);
 
-// Which of light/dark the shared ThemePreview pane renders right now — kept
-// alongside the appearance draft (not inside it) since it's pure UI state,
-// not something that gets saved. The Theme tab's Tabs control writes to
-// this so switching "Light"/"Dark" there also flips the live preview.
+// Which mode the shared ThemePreview pane renders — kept separate from the
+// appearance draft since it's pure UI state, never saved.
 export function PreviewModeProvider({ children }: { children: React.ReactNode }) {
   const [previewMode, setPreviewMode] = React.useState<"light" | "dark">("light");
   const value = React.useMemo(() => ({ previewMode, setPreviewMode }), [previewMode]);

@@ -25,12 +25,8 @@ export const DEFAULT_THEME_DRAFT: ThemeDraft = {
 };
 
 /**
- * Local, draft-only theme state — editing a swatch or the radius slider
- * NEVER writes anywhere outside this hook's state. The only way a draft
- * becomes real is an explicit Save (PUT /api/tenants/[tenantId]/config,
- * wired up in hooks/use-appearance-draft.ts, which composes this hook with
- * a branding draft so both survive switching between the Theme and
- * Branding tabs).
+ * Local, draft-only theme state — edits never write anywhere until an
+ * explicit Save (composed with a branding draft in use-appearance-draft.ts).
  */
 export function useThemePreview(initial: ThemeDraft = DEFAULT_THEME_DRAFT) {
   const [baseline, setBaseline] = React.useState(initial);

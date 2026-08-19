@@ -50,14 +50,10 @@ function LoginForm() {
     setFormError(null);
     setIsSubmitting(true);
     try {
-      // 1. Server-to-server login against the auth-bridge — returns a
-      // one-time InstantDB sign-in token plus the operator's identity.
+      // Server-to-server login against the auth-bridge; returns a one-time InstantDB sign-in token.
       const { token, operator } = await loginRequest(values.email, values.password);
 
-      // 2. Exchange the token for a live InstantDB session in the browser.
-      // This session stays live app-wide for realtime reads (dashboards,
-      // tenant/role/theme lists) — instant.perms.ts scopes every read to
-      // this operator already, and blocks writes outright.
+      // Exchange it for a live InstantDB session — used app-wide for realtime reads (instant.perms.ts scopes reads, blocks writes).
       await db.auth.signInWithToken(token);
       const auth = await db.getAuth();
       const refreshToken = auth?.refresh_token;
@@ -65,9 +61,7 @@ function LoginForm() {
         throw new Error("Could not establish a session. Please try again.");
       }
 
-      // 3. Hand the refresh token to the server, which stores it as the
-      // canonical httpOnly cookie used for every privileged write from here
-      // on — browser JS never needs to read it back out again.
+      // Server stores the refresh token as the httpOnly session cookie; browser JS never touches it again.
       await createSessionRequest(refreshToken, operator);
 
       const next = searchParams.get("next");

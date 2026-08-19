@@ -3,12 +3,8 @@ import { bridgeFetch, BridgeError } from "@/lib/bridge-server";
 import { checkPanelRequestHeader } from "@/lib/api-helpers";
 import type { PanelOperator } from "@/lib/types";
 
-// Proxies to the auth-bridge's POST /panel/login server-to-server. Returns
-// the one-time InstantDB sign-in token to the browser — it's single-use and
-// expires quickly, so handing it back to the client here is safe; the
-// client immediately exchanges it (db.auth.signInWithToken) and the
-// resulting refresh_token is what actually becomes the durable session (see
-// /api/auth/session).
+// Proxies auth-bridge's POST /panel/login; the one-time token is safe to return since it's
+// single-use and short-lived — the client's exchanged refresh_token is the real session (see /api/auth/session).
 export async function POST(request: Request) {
   const guard = checkPanelRequestHeader(request);
   if (guard) return guard;

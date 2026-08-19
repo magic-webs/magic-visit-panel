@@ -2,12 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { SESSION_COOKIE_NAME } from "@/lib/session-cookie";
 
-// Cheap presence-only cookie check for fast redirects. This is NOT the real
-// auth boundary — the cookie's value is never verified here (the proxy runs
-// on the Edge runtime and can't call the auth-bridge synchronously on every
-// request). Every privileged Route Handler re-validates the session itself
-// via lib/session.ts + a bearer-token round trip to the bridge, and
-// InstantDB's own permission rules are the real backstop for realtime reads.
+// Presence-only cookie check for fast redirects, not the real auth boundary — routes re-validate via lib/session.ts, and InstantDB's own rules back realtime reads.
 export function proxy(request: NextRequest) {
   const hasSession = request.cookies.has(SESSION_COOKIE_NAME);
   const { pathname } = request.nextUrl;

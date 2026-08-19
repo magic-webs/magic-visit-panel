@@ -47,10 +47,8 @@ function relativeTime(iso: string): string {
   return `${Math.round(hours / 24)}d ago`;
 }
 
-// Build/deploy history for both eas-build.yml and web-deploy.yml, filtered
-// to this tenant via each workflow's `run-name:` (see the API route's own
-// comment) — polling every 15s so in-flight runs update without a manual
-// refresh.
+// Build/deploy history for both workflows, filtered to this tenant via each
+// workflow's run-name; polls every 15s for live updates.
 export function RecentRuns({ tenantId, tenantSlug }: { tenantId: string; tenantSlug: string }) {
   const { data, isLoading } = useExportRuns(tenantId, tenantSlug);
 

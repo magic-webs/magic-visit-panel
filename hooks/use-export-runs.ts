@@ -8,9 +8,7 @@ export function useExportRuns(tenantId: string, tenantSlug: string) {
   return useQuery({
     queryKey: queryKeys.exportRuns.list(tenantId),
     queryFn: () => getExportRuns(tenantId, tenantSlug),
-    // Polls while any run might still be in flight — cheap, and gives the
-    // "tracking" table a live feel without needing a webhook/callback from
-    // GitHub Actions back into the panel.
+    // Polls so in-flight runs update live, without needing a GitHub Actions webhook.
     refetchInterval: 15_000,
   });
 }

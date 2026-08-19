@@ -7,9 +7,8 @@ import { Label } from "@/components/ui/label";
 import { formatOklch, hexToOklch, oklchToHex, parseOklch } from "@/lib/theme/oklch";
 import { cn } from "@/lib/utils";
 
-// A swatch Button -> Popover with a native <input type="color"> synced
-// through lib/theme/oklch.ts, plus a manual OKLCH text field for precise
-// entry. Every base token in the editor is edited through this one control.
+// Swatch -> Popover with a native color input synced via lib/theme/oklch.ts,
+// plus a manual OKLCH field for precise entry.
 export function ColorSwatchPicker({
   label,
   value,
@@ -20,9 +19,8 @@ export function ColorSwatchPicker({
   onChange: (next: string) => void;
 }) {
   const [textValue, setTextValue] = React.useState(value);
-  // Re-sync the draft text field when `value` changes from outside (preset
-  // switch, revert) — adjusted during render (React's documented pattern for
-  // this) rather than in an effect, so there's no extra commit in between.
+  // Re-sync text field when `value` changes externally (preset switch, revert) —
+  // adjusted during render (React's derived-state pattern) to avoid an extra commit.
   const [lastValue, setLastValue] = React.useState(value);
   if (value !== lastValue) {
     setLastValue(value);

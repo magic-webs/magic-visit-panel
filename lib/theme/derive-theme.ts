@@ -1,11 +1,5 @@
-// Computes every shadcn CSS variable that ISN'T one of the 6 editable base
-// tokens (see ThemeBaseTokens) from those 6 tokens alone. The panel never
-// lets a tenant edit card/popover/muted/border/input/ring/chart-*/sidebar-*
-// directly — they're always a function of primary/secondary/accent/
-// background/foreground/destructive, the same way globals.css's own
-// light/dark defaults relate to each other (verified token-by-token against
-// app/globals.css's current values with base tokens fixed to the neutral
-// scaffold — see the constants below).
+// Derives every shadcn CSS var that isn't one of the 6 editable base tokens (ThemeBaseTokens) — tenants never edit card/muted/border/chart-*/sidebar-* etc. directly.
+// Formulas verified token-by-token against app/globals.css's light/dark defaults with base tokens at the neutral scaffold.
 import { formatOklch, mixOklch, parseOklch, type Oklch } from "@/lib/theme/oklch";
 import { getChartPalette } from "@/lib/theme/chart-palette-bank";
 import type { ThemeBaseTokens } from "@/lib/types";
@@ -44,10 +38,7 @@ export interface FullTokenSet {
   "sidebar-ring": string;
 }
 
-// Two fixed contrast targets, matching the exact "near white" / "near black"
-// shades app/globals.css's own default (grayscale) theme uses for
-// primary-foreground/secondary-foreground/accent-foreground — reproduced
-// here token-for-token when base tokens are left at that neutral default.
+// Matches the exact near-white/near-black shades app/globals.css's default theme uses for *-foreground tokens.
 const NEAR_WHITE: Oklch = { l: 0.985, c: 0, h: 0 };
 const NEAR_BLACK: Oklch = { l: 0.205, c: 0, h: 0 };
 const CONTRAST_THRESHOLD = 0.6;
@@ -60,14 +51,11 @@ function clampL(l: number): number {
   return Math.min(1, Math.max(0, l));
 }
 
-// One-step-off constants, solved against app/globals.css's own light/dark
-// pairs (card vs background differ by +0.06 L in dark mode and 0 in light;
-// the sidebar's own step is smaller/negative in light, +0.06 in dark).
+// Step constants solved against app/globals.css's own light/dark pairs.
 const CARD_STEP = { light: 0, dark: 0.06 };
 const SIDEBAR_STEP = { light: -0.015, dark: 0.06 };
 
-// Mix weights toward `foreground`, solved the same way against the default
-// scaffold's muted/muted-foreground/border/ring values.
+// Mix weights toward `foreground`, solved against the default scaffold's muted/border/ring values.
 const MUTED_BG_WEIGHT = { light: 0.035, dark: 0.15 };
 const MUTED_FG_WEIGHT = { light: 0.52, dark: 0.67 };
 const BORDER_WEIGHT = { light: 0.09, dark: 0.09 }; // dark uses the alpha-overlay path instead, see below
@@ -79,9 +67,7 @@ function deriveMuted(background: Oklch, foreground: Oklch, primary: Oklch, mode:
   const bgMixed = mixOklch(background, foreground, bgWeight);
   const fgMixed = mixOklch(background, foreground, fgWeight);
   return {
-    // A faint hint of the tenant's own primary hue keeps neutral surfaces
-    // from reading as a totally generic gray, mirroring how many hand-tuned
-    // shadcn themes lightly tint muted/ring toward the brand color.
+    // A faint hint of the tenant's primary hue keeps neutral surfaces from reading as generic gray.
     bg: { l: bgMixed.l, c: Math.min(0.02, primary.c * 0.06), h: primary.h },
     fg: { l: fgMixed.l, c: Math.min(0.01, primary.c * 0.03), h: primary.h },
   };
@@ -94,9 +80,7 @@ function deriveRing(background: Oklch, foreground: Oklch, primary: Oklch, mode: 
 
 function deriveBorderLike(background: Oklch, foreground: Oklch, mode: "light" | "dark", alphaPercent: number): Oklch {
   if (mode === "dark") {
-    // Mirrors app/globals.css's own dark-mode pattern exactly: a translucent
-    // near-white overlay rather than a flat opaque gray, since dark UIs read
-    // better as a lightening wash over whatever sits underneath.
+    // Mirrors globals.css's dark mode: a translucent near-white overlay, not a flat gray — reads as a lightening wash.
     return { l: 1, c: 0, h: 0, alpha: alphaPercent / 100 };
   }
   const mixed = mixOklch(background, foreground, BORDER_WEIGHT.light);

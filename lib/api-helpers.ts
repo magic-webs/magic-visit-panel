@@ -1,12 +1,9 @@
-// Small shared helpers for app/api/** Route Handlers — every protected route
-// repeats the same three steps: check the CSRF header, resolve the session,
-// translate a BridgeError into a JSON response with the right status.
+// Shared helpers for app/api/** Route Handlers: CSRF header check, session resolution, BridgeError-to-JSON translation.
 import { NextResponse } from "next/server";
 import { getSession, type PanelSession } from "@/lib/session";
 import { BridgeError } from "@/lib/bridge-server";
 
-// Custom-header CSRF check — a simple cross-site form POST can't set this
-// header, so this blocks naive CSRF against the cookie-authenticated routes.
+// Custom header a cross-site form POST can't set — blocks naive CSRF on cookie-authenticated routes.
 export function checkPanelRequestHeader(request: Request): NextResponse | null {
   if (request.headers.get("x-panel-request") !== "1") {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });

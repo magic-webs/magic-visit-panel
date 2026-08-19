@@ -1,12 +1,7 @@
 "use client";
 
-// Typed fetch wrappers hitting the PANEL'S OWN app/api/** Route Handlers —
-// never the auth-bridge Worker directly. Mirrors the shape of the mobile
-// app's lib/auth-bridge.ts `authedFetch` pattern: throw a typed error on any
-// non-2xx response so callers (React Query mutations) get a clean message.
-//
-// Every call carries the `x-panel-request: 1` header the Route Handlers
-// check as a lightweight CSRF guard (see proxy.ts / each route.ts).
+// Typed fetch wrappers for the panel's own app/api/** routes (never the auth-bridge Worker directly) — throws a typed error on non-2xx responses.
+// Carries the `x-panel-request: 1` header, the CSRF guard the routes check (see proxy.ts).
 
 import type {
   CreateOrganizationInput,

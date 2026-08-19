@@ -1,7 +1,4 @@
-// Mirrors auth-bridge/src/lib/capabilities.ts's CAPABILITIES/STRUCTURAL_ROLES
-// catalogs — kept in sync BY HAND, same rationale as lib/instant.schema.ts.
-// The panel never invents a capability string beyond this list; it only
-// lets a tenant compose roles from it.
+// Mirrors auth-bridge/src/lib/capabilities.ts — kept in sync by hand. Panel only composes roles from this list, never invents new capability strings.
 
 export const CAPABILITIES = [
   "can_manage_staff",
@@ -34,9 +31,7 @@ export const STRUCTURAL_ROLE_LABELS: Record<StructuralRole, string> = {
   accountant: "Accountant",
 };
 
-// Grouped for the permission-editor UI — a resource-area grouping, not a
-// CRUD matrix, since capabilities like can_approve_discounts don't map onto
-// uniform create/read/update/delete slots.
+// Grouped by resource area (not CRUD) for the permission-editor UI, since capabilities don't map onto uniform CRUD slots.
 export interface CapabilityGroup {
   key: string;
   label: string;

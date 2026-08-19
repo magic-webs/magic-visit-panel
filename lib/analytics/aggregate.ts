@@ -1,7 +1,4 @@
-// Client-side aggregation for the analytics dashboards. InstantDB has no
-// server-side GROUP BY, so every chart's hook (hooks/use-analytics-data.ts)
-// runs a live db.useQuery for the raw rows and reduces them here, memoized
-// by the caller.
+// Client-side aggregation: InstantDB has no server-side GROUP BY, so charts reduce raw rows here (see hooks/use-analytics-data.ts).
 import { STATUS_STYLES, type VisitorStatus, type DiscountRequestStatus } from "@/lib/analytics/status-colors";
 
 export interface DateRange {
@@ -66,10 +63,7 @@ export interface VisitsOverTimePoint {
   [branchName: string]: string | number;
 }
 
-// Categorical hues are a fixed, never-cycled set (see chart-palette-bank.ts)
-// — a breakdown series can't just grow one column per branch, so this caps
-// the breakdown to the top N branches by volume; any visit at a smaller
-// branch still counts toward `total`, just not toward its own column.
+// Caps the breakdown to the top N branches (fixed hue set can't grow one column per branch); smaller branches still count toward `total`.
 export function topBranchNames(records: VisitorLogRecord[], limit = 5): string[] {
   const counts = new Map<string, number>();
   for (const record of records) {

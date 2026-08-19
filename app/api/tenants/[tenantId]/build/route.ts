@@ -8,13 +8,9 @@ const GITHUB_REPO = process.env.MOBILE_REPO_NAME || "magic-visit-app";
 const GITHUB_REF = process.env.MOBILE_REPO_REF || "main";
 const WORKFLOW_FILE = "eas-build.yml";
 
-// Dispatches magic-visit-app's .github/workflows/eas-build.yml — a real
-// GitHub API call, not a bridge route, since this has nothing to do with
-// tenant data and everything to do with triggering CI in a different repo.
-// Requires a GITHUB_TOKEN (a PAT/fine-grained token with `actions: write` on
-// that repo) as a server-only secret; without one configured this responds
-// 501 so the UI can fall back to the manual EAS-dashboard link instead of
-// silently failing.
+// Dispatches magic-visit-app's eas-build.yml via the GitHub API directly (not the bridge) since
+// this triggers CI in another repo. Needs a server-only GITHUB_TOKEN (actions: write); 501s if
+// unset so the UI can fall back to the manual EAS-dashboard link instead of failing silently.
 export async function POST(request: Request, { params }: RouteContext) {
   const guard = checkPanelRequestHeader(request);
   if (guard) return guard;
@@ -22,7 +18,7 @@ export async function POST(request: Request, { params }: RouteContext) {
   const { session, response } = await requireSessionOrRespond();
   if (!session) return response;
   const { tenantId } = await params;
-  void tenantId; // not needed for the dispatch itself — tenantSlug (from the request body) is what the workflow actually uses
+  void tenantId; // the dispatch uses tenantSlug from the request body instead
 
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
@@ -52,9 +48,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     body: JSON.stringify({ ref: GITHUB_REF, inputs: { tenant_slug: tenantSlug, platform, profile } }),
   });
 
-  // workflow_dispatch returns 204 with an empty body on success — there is
-  // no run id in this response, so the best we can point at is the
-  // workflow's own Actions page (its most recent run will be this one).
+  // workflow_dispatch returns 204 with no run id, so we can only point at the workflow's Actions page.
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
     return NextResponse.json(

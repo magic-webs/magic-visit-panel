@@ -19,11 +19,8 @@ import {
   type VisitorLogRecord,
 } from "@/lib/analytics/aggregate";
 
-// One shared live query per tenant+range — every chart hook below reads off
-// this (InstantDB has no server-side GROUP BY, so every reduction happens
-// client-side in lib/analytics/aggregate.ts). Sharing the source query
-// avoids mounting near-duplicate subscriptions for what is, underneath,
-// exactly the same three namespaces.
+// Shared live query per tenant+range — InstantDB has no server-side GROUP BY,
+// so reduction happens client-side; sharing avoids duplicate subscriptions.
 function useTenantAnalyticsSource(tenantId: string, range: DateRange) {
   const fromMs = range.from.getTime();
   const toMs = range.to.getTime();
@@ -58,8 +55,7 @@ function useTenantAnalyticsSource(tenantId: string, range: DateRange) {
       (data?.visitorLogs ?? []).map((log) => ({
         id: log.id,
         status: log.status,
-        // i.date() fields resolve as `string | number` unless the client is
-        // configured with useDateObjects — normalize to a plain ms timestamp.
+        // i.date() fields resolve as string | number without useDateObjects — normalize to a ms timestamp.
         visitedAt: Number(log.visitedAt),
         branchId: log.branch?.id,
         branchName: log.branch?.name,

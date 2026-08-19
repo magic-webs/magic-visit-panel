@@ -3,11 +3,8 @@ import { checkPanelRequestHeader } from "@/lib/api-helpers";
 import { SESSION_COOKIE_NAME, serializeSession } from "@/lib/session";
 import type { PanelOperator } from "@/lib/types";
 
-// Receives the InstantDB refresh_token the client obtained by exchanging the
-// one-time login token (db.auth.signInWithToken → db.getAuth().refresh_token)
-// and stores it as the canonical httpOnly session cookie. From this point on
-// the browser never sees this token again — every privileged mutation goes
-// through a Route Handler that reads it back out of the cookie server-side.
+// Stores the client's exchanged InstantDB refresh_token as an httpOnly cookie; browser JS never
+// sees it again — privileged mutations go through Route Handlers that read it back server-side.
 export async function POST(request: Request) {
   const guard = checkPanelRequestHeader(request);
   if (guard) return guard;

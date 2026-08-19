@@ -17,7 +17,7 @@ export function ChartCard({
   description?: string;
   action?: React.ReactNode;
   chart: React.ReactNode;
-  /** The same data, rendered as a Table — the required accessibility relief channel for any chart whose marks sit below a 3:1 contrast floor. */
+  /** Same data as a table — the required a11y fallback for chart marks below 3:1 contrast. */
   table: React.ReactNode;
 }) {
   const [view, setView] = React.useState<"chart" | "table">("chart");

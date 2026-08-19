@@ -51,9 +51,7 @@ export default function TenantLayout({ children, params }: { children: React.Rea
     </div>
   );
 
-  // A tenant with no saved theme yet keeps the panel's own neutral default
-  // chrome — only a SAVED theme re-skins this subtree, so an admin can tell
-  // at a glance whether appearance has been configured yet.
+  // No saved theme yet — keep the panel's neutral default chrome so it's obvious appearance isn't configured.
   if (!liveTheme) {
     return (
       <div className="flex min-h-full flex-1 flex-col">

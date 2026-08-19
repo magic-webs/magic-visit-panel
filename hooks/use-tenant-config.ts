@@ -23,10 +23,8 @@ export function useSaveTenantConfig(tenantId: string) {
   });
 }
 
-// Realtime read used by tenants/[tenantId]/layout.tsx to re-skin the whole
-// tenant-scoped subtree the instant a save lands — a direct InstantDB read
-// (granted by instant.perms.ts to both operator tiers) rather than the REST
-// route, so every open tab/window picks up a saved theme change live.
+// Realtime InstantDB read (granted to both operator tiers by instant.perms.ts)
+// so every open tab picks up a saved theme change live, instead of via the REST route.
 export function useTenantThemeLive(tenantId: string | undefined) {
   const { data, isLoading } = db.useQuery(
     tenantId ? { themes: { $: { where: { tenantId } } }, branding: { $: { where: { tenantId } } } } : null,

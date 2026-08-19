@@ -1,6 +1,4 @@
-// Server-only. Never import this from a Client Component — it reads the
-// httpOnly `panel_session` cookie via next/headers, which is only available
-// in Server Components, Route Handlers, and middleware.
+// Server-only — reads the httpOnly panel_session cookie via next/headers, unavailable in Client Components.
 import { cookies } from "next/headers";
 import type { PanelOperator } from "@/lib/types";
 import { SESSION_COOKIE_NAME } from "@/lib/session-cookie";

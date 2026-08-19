@@ -1,7 +1,4 @@
-// Server-only. Talks to the auth-bridge Worker directly — only ever called
-// from app/api/** Route Handlers, never from a Client Component (the browser
-// never sees AUTH_BRIDGE_URL or the bearer token directly, per the panel's
-// cookie-based BFF auth model).
+// Server-only: talks to the auth-bridge Worker directly, only from Route Handlers — the browser never sees AUTH_BRIDGE_URL or the bearer token (cookie-based BFF auth model).
 
 const RAW_BASE_URL = process.env.AUTH_BRIDGE_URL ?? "http://localhost:8787";
 const BASE_URL = RAW_BASE_URL.replace(/\/+$/, "");
@@ -20,12 +17,7 @@ interface BridgeRequestOptions {
   body?: unknown;
 }
 
-// The bridge normally returns `{ error: string }` (see auth-bridge/src/lib/
-// validation.ts and every route's own `c.json({ error: "..." }, ...)` calls)
-// — but this stays defensive against a raw @hono/zod-validator failure
-// (`{ success: false, error: <ZodError> }`, where `error` is an object, not
-// a string) slipping through from some path that isn't wrapped, rather than
-// silently collapsing to a useless generic message.
+// Normally `{ error: string }`, but stays defensive against a raw @hono/zod-validator failure (`{ error: <ZodError> }`) slipping through unwrapped.
 function extractErrorMessage(data: unknown): string {
   if (!data || typeof data !== "object") return "The auth-bridge request failed.";
   const err = (data as { error?: unknown }).error;

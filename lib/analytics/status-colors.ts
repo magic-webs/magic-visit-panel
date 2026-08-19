@@ -1,13 +1,5 @@
-// Copied verbatim from
-// c:\development\magic-visit-crm\magic-visit-app\constants\theme.ts
-// (STATUS_STYLES / DISCOUNT_STATUS_STYLES only — the rest of that file is
-// mobile-app-specific navigation theming this panel has no use for).
-//
-// These are NEVER themed: visit-outcome and discount-status colors must stay
-// consistent across the mobile app and this panel regardless of a tenant's
-// brand theme, the same way the dataviz skill treats "status" as a small
-// fixed scale with reserved meaning, distinct from any themed/categorical
-// palette.
+// Copied from magic-visit-app/constants/theme.ts (STATUS_STYLES / DISCOUNT_STATUS_STYLES only).
+// Never themed — status colors must stay consistent across the mobile app and panel regardless of tenant brand.
 
 export type VisitorStatus = "sold" | "not_interested" | "not_available" | "window_shopping" | "follow_up" | "none";
 

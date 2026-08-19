@@ -1,6 +1,4 @@
-// Shared domain types mirroring the auth-bridge's response shapes 1:1 — see
-// auth-bridge/src/routes/panel.routes.ts and
-// auth-bridge/src/validators/panel.validator.ts for the source of truth.
+// Domain types mirroring the auth-bridge's response shapes 1:1 (see auth-bridge/src/routes/panel.routes.ts).
 
 import type { Capability, StructuralRole } from "@/lib/capabilities";
 

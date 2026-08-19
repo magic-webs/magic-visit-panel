@@ -1,9 +1,5 @@
-// Ported from magic-visit-app/lib/theme/derive-brand-vars.ts — mirrors the
-// EXACT gradient-header / gold-scale derivation the real mobile app applies
-// at runtime, so components/theme/mobile-preview.tsx shows the same colors
-// a real device would render for this theme, not just an approximation via
-// the (differently-derived) web dashboard token set in derive-theme.ts.
-// Keep in sync by hand if the mobile app's version changes.
+// Ported from magic-visit-app/lib/theme/derive-brand-vars.ts — mirrors the mobile app's exact gradient/gold derivation so mobile-preview.tsx
+// matches a real device, not the differently-derived web token set in derive-theme.ts. Keep in sync by hand if the mobile app's version changes.
 import { parseOklch, oklchToHex, type Oklch } from "./oklch";
 import type { ThemeBaseTokens } from "@/lib/types";
 
@@ -15,8 +11,7 @@ function lighten(color: Oklch, amount: number): Oklch {
   return { ...color, l: clamp01(color.l + amount) };
 }
 
-// A light neutral/gold-ish scale derived from `secondary`, sharing its hue
-// but varying lightness/chroma — same formula as the mobile app's version.
+// Gold-ish scale derived from `secondary` (same hue, varying L/C) — same formula as the mobile app.
 function deriveGoldScale(secondary: Oklch) {
   const near = (l: number, c: number): Oklch => ({ l, c, h: secondary.h });
   return {
@@ -29,10 +24,7 @@ export interface MobileResolvedBrand {
   gradientPrimary: [string, string, string];
   goldBackground: string;
   goldBorder: string;
-  // The solid "lip" color sat behind the button face at rest — see
-  // magic-visit-app/components/ui/Button.tsx's own comment on this: no
-  // shadows, just a darker solid-color layer offset below the face
-  // (`edge` there). Approximated here as a plain CSS box-shadow.
+  // Solid "lip" color behind the button face at rest (see magic-visit-app Button.tsx's `edge`) — approximated here as a plain box-shadow.
   buttonEdge: string;
 }
 

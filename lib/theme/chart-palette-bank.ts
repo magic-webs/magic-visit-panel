@@ -1,9 +1,5 @@
-// A fixed, pre-validated 8-hue categorical bank for chart-2..5 (chart-1 is
-// always the tenant's own primary — see getChartPalette below). The hues,
-// fixed order, and light/dark hex steps are the dataviz skill's validated
-// reference palette (references/palette.md): each adjacent pair clears the
-// CVD-safety ΔE gates in both modes, so as long as slots are consumed in
-// this fixed order (never cycled/reordered) the result stays distinguishable.
+// Fixed 8-hue categorical bank for chart-2..5 (chart-1 is the tenant's own primary, see getChartPalette below).
+// Hues/order are the dataviz skill's validated palette (references/palette.md) — CVD-safety only holds if slots are consumed in this fixed order.
 import { hexToOklch, hueDistance, type Oklch } from "@/lib/theme/oklch";
 
 interface BankHue {
@@ -12,8 +8,7 @@ interface BankHue {
   dark: string;
 }
 
-// Fixed order — do not reorder. See references/palette.md in the dataviz
-// skill for the validation this order and these exact hex steps passed.
+// Fixed order — do not reorder (see references/palette.md).
 const BANK: BankHue[] = [
   { name: "blue", light: "#2a78d6", dark: "#3987e5" },
   { name: "orange", light: "#eb6834", dark: "#d95926" },
@@ -27,10 +22,7 @@ const BANK: BankHue[] = [
 
 const SKIP_HUE_DISTANCE = 90;
 
-// Legible band for chart-1 (the tenant's own primary, reused as a chart
-// color) — matches the dataviz skill's categorical lightness band so it
-// doesn't disappear against the chart surface: OKLCH L ~0.43-0.77 light,
-// ~0.48-0.67 dark, chroma floor ~0.10.
+// Legible band for chart-1 (tenant's primary reused as a chart color) — matches the dataviz skill's categorical lightness band so it stays visible against the chart surface.
 const LIGHTNESS_BAND = {
   light: { min: 0.43, max: 0.77 },
   dark: { min: 0.48, max: 0.67 },
@@ -46,11 +38,7 @@ function clampForChart(color: Oklch, mode: "light" | "dark"): Oklch {
   };
 }
 
-/**
- * chart-1 = the tenant's primary, clamped into a legible band.
- * chart-2..5 = the next 4 bank hues in fixed order, skipping any within
- * ~90° hue of the tenant's primary to avoid a near-collision with chart-1.
- */
+/** chart-1 = tenant's primary, clamped to a legible band. chart-2..5 = next 4 bank hues in fixed order, skipping any within ~90° hue of chart-1. */
 export function getChartPalette(primary: Oklch, mode: "light" | "dark"): [Oklch, Oklch, Oklch, Oklch, Oklch] {
   const chart1 = clampForChart(primary, mode);
 
@@ -59,10 +47,7 @@ export function getChartPalette(primary: Oklch, mode: "light" | "dark"): [Oklch,
   const farEnough = bankOklch.filter((color) => hueDistance(color.h, chart1.h) > SKIP_HUE_DISTANCE);
   const rest = bankOklch.filter((color) => hueDistance(color.h, chart1.h) <= SKIP_HUE_DISTANCE);
 
-  // Fixed bank order is preserved within each bucket; only the exclusion is
-  // hue-dependent. If filtering leaves fewer than 4 (primary sits near more
-  // than half the bank), fill the remainder from the excluded set, still in
-  // original bank order, so there are always 5 colors on offer.
+  // If filtering leaves fewer than 4 (primary near more than half the bank), fill the remainder from the excluded set, still in original order.
   const ordered = [...farEnough, ...rest].slice(0, 4) as [Oklch, Oklch, Oklch, Oklch];
 
   return [chart1, ...ordered];

@@ -7,12 +7,9 @@ import { queryKeys } from "@/lib/query-keys";
 import { useOperator } from "@/providers/operator-provider";
 import type { CreateOrganizationInput, Organization, TenantSummary, UpdateOrganizationInput } from "@/lib/types";
 
-// GET /platform/organizations (proxied by /api/tenants) is super_admin-only
-// server-side — see auth-bridge/src/routes/panel.routes.ts. A tenant_admin
-// operator falls back to a direct, realtime InstantDB read instead: that
-// namespace's instant.perms.ts rule (`isScopedOperator`) already grants them
-// view access to just the tenants they're linked to, and staff/branch counts
-// are computed here the same way the bridge computes them server-side.
+// GET /platform/organizations is super_admin-only server-side; tenant_admin
+// falls back to a direct InstantDB read (scoped by instant.perms.ts) and
+// computes staff/branch counts the same way the bridge does.
 export function useTenants() {
   const operator = useOperator();
   const isSuperAdmin = operator.role === "super_admin";

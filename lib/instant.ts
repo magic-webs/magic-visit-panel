@@ -3,15 +3,8 @@
 import { init } from "@instantdb/react";
 import schema from "@/lib/instant.schema";
 
-// Browser InstantDB client. Two jobs, both described in the panel spec:
-//   1. The one-time login-token exchange (db.auth.signInWithToken) that
-//      turns /api/auth/login's response into a live InstantDB session, whose
-//      refresh_token is then handed to /api/auth/session to become the
-//      canonical httpOnly cookie used for every privileged write.
-//   2. Realtime reads (db.useQuery) for dashboards/lists — instant.perms.ts
-//      already scopes every read to the signed-in panel operator, so this
-//      session is safe to keep live for the whole app; it can never write to
-//      any of these namespaces regardless (see instant.perms.ts).
+// Browser InstantDB client. Handles the one-time login-token exchange (db.auth.signInWithToken) that seeds the httpOnly session cookie,
+// plus realtime reads (db.useQuery) — safe to keep live app-wide since instant.perms.ts scopes every read to the operator and blocks all writes.
 const appId = process.env.NEXT_PUBLIC_INSTANT_APP_ID;
 
 if (!appId && process.env.NODE_ENV !== "production") {

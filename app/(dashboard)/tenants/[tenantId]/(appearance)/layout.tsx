@@ -11,21 +11,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AppearanceProvider, PreviewModeProvider, useAppearanceContext } from "@/components/theme/appearance-context";
 import { MobilePreview } from "@/components/theme/mobile-preview";
 
-// A persistent split layout — editor panel (left) + live MobilePreview
-// (right) — shared across the Theme and Branding tabs via AppearanceProvider
-// so draft state survives switching tabs. Only Save/Cancel/Revert (wired to
-// PUT /api/tenants/[tenantId]/config) ever makes an edit real.
-//
-// Only the mobile-app preview is shown here now — the generic web-dashboard
-// mockup (ThemePreview) never corresponded to any real deployed surface
-// (the panel's own chrome doesn't need a "preview" of itself), so it was
-// just a second, less accurate approximation alongside the one that
-// actually matters: what a tenant's real installed/deployed app looks like.
-// PreviewModeProvider stays, though — the Theme tab's own Light/Dark
-// Tabs (see theme/page.tsx) still edits both token sets even though
-// MobilePreview only ever renders light mode (the mobile app has no dark
-// mode yet), so that switch is about which tokens you're EDITING, not
-// which the preview shows.
+// Split layout (editor left, live MobilePreview right) shared across Theme/Branding tabs via
+// AppearanceProvider so draft state survives tab switches; only Save commits it via PUT config.
+// PreviewModeProvider's Light/Dark switch controls which token set is being EDITED, not what
+// MobilePreview renders — it's always light (the mobile app has no dark mode yet).
 export default function AppearanceLayout({ children, params }: { children: React.ReactNode; params: Promise<{ tenantId: string }> }) {
   const { tenantId } = React.use(params);
   return (

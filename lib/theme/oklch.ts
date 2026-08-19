@@ -1,9 +1,5 @@
-// Pure OKLCH <-> sRGB conversion. No DOM/React imports on purpose — this
-// module is portable enough to be lifted into the mobile app later for
-// NativeWind theming (see lib/theme/derive-theme.ts for how it's used here).
-//
-// Math follows Björn Ottosson's OKLab reference:
-// https://bottosson.github.io/posts/oklab/
+// Pure OKLCH <-> sRGB conversion, no DOM/React imports (portable for future mobile/NativeWind use).
+// Math follows Björn Ottosson's OKLab reference: https://bottosson.github.io/posts/oklab/
 
 export interface Oklch {
   l: number; // 0..1

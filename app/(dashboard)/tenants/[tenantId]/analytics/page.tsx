@@ -81,7 +81,6 @@ export default function AnalyticsPage({ params }: { params: Promise<{ tenantId: 
         <DateRangePicker value={range} onChange={setRange} />
       </div>
 
-      {/* KPI row */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpisLoading ? (
           Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-28 w-full" />)
@@ -103,7 +102,6 @@ export default function AnalyticsPage({ params }: { params: Promise<{ tenantId: 
         )}
       </div>
 
-      {/* Visits over time */}
       <ChartCard
         title="Visits over time"
         description="Daily visit volume across the selected range."

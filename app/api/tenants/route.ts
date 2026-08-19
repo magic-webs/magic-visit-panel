@@ -3,11 +3,8 @@ import { bridgeFetch } from "@/lib/bridge-server";
 import { bridgeErrorResponse, checkPanelRequestHeader, requireSessionOrRespond } from "@/lib/api-helpers";
 import type { CreateOrganizationInput, TenantSummary } from "@/lib/types";
 
-// GET is super_admin-only server-side (auth-bridge's GET /platform/organizations
-// requireSuperAdmin) — a tenant_admin operator gets a 403 here, which
-// hooks/use-tenants.ts deliberately falls back on by reading `organizations`
-// directly off InstantDB instead (that namespace's instant.perms.ts rules
-// grant a scoped operator view access to just their own linked tenants).
+// GET is super_admin-only server-side; a tenant_admin gets a 403 here, which hooks/use-tenants.ts
+// deliberately falls back on by reading `organizations` straight off InstantDB (scoped by instant.perms.ts).
 export async function GET() {
   const { session, response } = await requireSessionOrRespond();
   if (!session) return response;

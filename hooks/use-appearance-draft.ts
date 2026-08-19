@@ -20,12 +20,8 @@ const DEFAULT_BRANDING_DRAFT: BrandingDraft = { appName: "", shortName: "", cust
 export type LogoSlot = "logoLight" | "logoDark" | "icon";
 
 /**
- * Tracks THEME and BRANDING draft state together in one place, backed by a
- * single tenant. The (appearance) split layout mounts this once and shares
- * it across the Theme and Branding tabs (via React context — see
- * app/(dashboard)/tenants/[tenantId]/(appearance)/layout.tsx) so switching
- * tabs never loses in-progress edits, and both save through the one atomic
- * PUT /api/tenants/[tenantId]/config call.
+ * Tracks theme + branding draft state together so switching Theme/Branding
+ * tabs never loses in-progress edits; both save via one atomic PUT /config call.
  */
 export function useAppearanceDraft(tenantId: string) {
   const configQuery = useTenantConfig(tenantId);
@@ -34,8 +30,7 @@ export function useAppearanceDraft(tenantId: string) {
 
   const [brandingBaseline, setBrandingBaseline] = React.useState<BrandingDraft>(DEFAULT_BRANDING_DRAFT);
   const [brandingDraft, setBrandingDraft] = React.useState<BrandingDraft>(DEFAULT_BRANDING_DRAFT);
-  // Local object URLs for not-yet-uploaded logo files, so the preview
-  // updates instantly while db.storage.uploadFile() is still in flight.
+  // Local object URLs for not-yet-uploaded logo files, so previews update instantly while the upload is in flight.
   const [previews, setPreviews] = React.useState<Partial<Record<LogoSlot, string>>>({});
   const hydrated = React.useRef(false);
 
@@ -80,14 +75,8 @@ export function useAppearanceDraft(tenantId: string) {
     setPreviews((prev) => ({ ...prev, [slot]: url }));
   }, []);
 
-  // `previews` above only ever holds a blob URL for a file uploaded THIS
-  // session (LogoUploader.onPreview) — on a fresh page load, nothing sets
-  // it, so anything reading `previews.logoLight` directly (the Mobile/Web
-  // live-preview panes) saw no logo at all even though a real one was
-  // already saved, until you re-uploaded. Resolve the actual saved file's
-  // URL the same way LogoUploader's own thumbnail does (a $files lookup by
-  // id) and fall back to that when there's no in-flight upload preview, so
-  // "resolvedPreviews" is always what should actually be shown.
+  // `previews` only holds this-session upload blobs, so on a fresh load a
+  // saved logo wouldn't show — resolve the saved file's URL via a $files lookup as fallback.
   const fileIds = [brandingDraft.logoLightFileId, brandingDraft.logoDarkFileId, brandingDraft.iconFileId].filter(
     (fid): fid is string => Boolean(fid),
   );

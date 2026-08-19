@@ -14,13 +14,10 @@ export interface ThemeScopeProps extends Omit<React.ComponentProps<"div">, "styl
   mode: "light" | "dark";
 }
 
-// Applies a tenant's (or draft) theme as inline CSS custom properties on its
-// own wrapper — NOT an iframe, NOT document.documentElement. Because
-// app/globals.css's `@theme inline` block already maps every Tailwind color
-// utility to one of these CSS vars, every descendant shadcn component just
-// repaints correctly for free. Re-declares `font-sans` on itself (not just
-// the variable) so `font-family` re-resolves here instead of inheriting
-// whatever the page's own <html> font resolved to.
+// Applies the theme as inline CSS vars on this wrapper (not an iframe or
+// document root) — globals.css maps Tailwind colors to these vars, so
+// descendants repaint for free. Redeclares font-sans so it re-resolves here
+// instead of inheriting the page's <html> font.
 export const ThemeScope = React.forwardRef<HTMLDivElement, ThemeScopeProps>(function ThemeScope(
   { light, dark, radius, font, mode, className, children, ...props },
   ref,

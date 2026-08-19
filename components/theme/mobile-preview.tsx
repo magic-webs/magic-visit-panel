@@ -28,15 +28,8 @@ const SCREENS: Array<{ key: Screen; label: string }> = [
   { key: "profile", label: "Profile" },
 ];
 
-// A phone-frame mockup of the ACTUAL magic-visit-app screens (see
-// magic-visit-app/app/(auth)/login.tsx, components/dashboard/*, and
-// components/profile/ProfileScreenContent.tsx) — not the generic web
-// dashboard in theme-preview.tsx. That preview shows what the PANEL's own
-// chrome looks like re-themed; this shows what the actual mobile product a
-// tenant's staff use every day will look like, since that's the primary
-// branded surface. Always renders in light mode — the mobile app has no
-// dark mode yet (see constants/theme.ts's hardcoded `dark: false`), so
-// showing one here would misrepresent it.
+// Mirrors the real magic-visit-app screens (not the panel's own theme-preview) —
+// always light mode, since the mobile app has no dark mode yet.
 export function MobilePreview({
   theme,
   appName,
@@ -82,12 +75,8 @@ export function MobilePreview({
         ))}
       </div>
 
-      {/* Phone chassis — deliberately NOT theme-scoped; the bezel is a
-          physical device, not part of the branded UI. The frame's own
-          pixel dimensions don't shrink (its internal mockup content is all
-          fixed-size too), so it scrolls horizontally within its own
-          max-w-full box on a narrow viewport instead of forcing the whole
-          page wider or clipping unpredictably. */}
+      {/* Phone chassis — not theme-scoped (it's a physical device, not branded UI);
+          fixed pixel size, so it scrolls horizontally in its own box rather than widening the page. */}
       <div className="max-w-full overflow-x-auto">
         <div className="mx-auto w-fit rounded-[2.5rem] border-[6px] border-neutral-900 bg-neutral-900 p-1.5 shadow-xl">
           <div className="relative h-[600px] w-[300px] overflow-hidden rounded-[2rem] bg-white">
@@ -166,9 +155,7 @@ function LoginScreen({
           </div>
         </div>
 
-        {/* The real Button component's "3D lip" (see components/ui/Button.tsx
-            there) is a solid edge color sat behind the face, not a shadow —
-            a plain offset box-shadow is the closest static CSS equivalent. */}
+        {/* Real Button's "3D lip" is a solid edge color, not a shadow — box-shadow is the closest static approximation. */}
         <div
           className="mt-5 mb-1.5 rounded-full py-2.5 text-center text-sm font-semibold text-white"
           style={{ backgroundImage: gradientCss, boxShadow: `0 4px 0 0 ${buttonEdge}` }}

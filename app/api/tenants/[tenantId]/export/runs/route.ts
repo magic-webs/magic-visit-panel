@@ -26,14 +26,8 @@ interface GithubWorkflowRun {
   display_title?: string;
 }
 
-// Build/deploy history, filtered to the requesting tenant. GitHub's runs API
-// doesn't expose workflow_dispatch input values anywhere queryable, so
-// both .github/workflows/*.yml declare a `run-name: "${{ inputs.tenant_slug
-// }} — ..."` — that becomes each run's `display_title`, which this route
-// matches against `?tenantSlug=`. Manually-triggered runs (from the GitHub
-// UI, where someone might type the slug differently, or skip run-name
-// entirely on an older run) won't match perfectly, but every run this
-// panel itself dispatches will.
+// GitHub's runs API doesn't expose dispatch input values, so the workflows set
+// `run-name: "${{ inputs.tenant_slug }} — ..."` and we match `display_title` against `?tenantSlug=`.
 export async function GET(request: Request) {
   const { session, response } = await requireSessionOrRespond();
   if (!session) return response;
@@ -68,9 +62,7 @@ export async function GET(request: Request) {
       const data = (await res.json()) as { workflow_runs?: GithubWorkflowRun[] };
       for (const run of data.workflow_runs ?? []) {
         const displayTitle = run.display_title ?? run.name;
-        // run-name format is "<tenant_slug> — ...", so match on that exact
-        // leading segment rather than a loose substring (a slug could
-        // otherwise accidentally match as a substring of a different one).
+        // Match the exact leading segment, not a loose substring, so one slug can't match inside another.
         if (tenantSlug && !displayTitle.startsWith(`${tenantSlug} —`)) continue;
         runs.push({
           id: run.id,

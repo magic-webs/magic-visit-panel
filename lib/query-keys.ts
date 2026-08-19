@@ -1,5 +1,4 @@
-// React Query key factory — keeps invalidation call sites consistent instead
-// of hand-rolling arrays everywhere.
+// Query key factory — keeps invalidation call sites consistent.
 export const queryKeys = {
   tenants: {
     all: ["tenants"] as const,

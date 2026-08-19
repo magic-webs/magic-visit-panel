@@ -4,10 +4,8 @@ import { CAPABILITY_GROUPS, CAPABILITY_LABELS, type Capability } from "@/lib/cap
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 
-// A resource-area grouping (Visitor Logs, Customers, Staff & Roles, Branches,
-// Discounts, Offers, Performance, Analytics) rather than a strict CRUD
-// matrix — several capabilities (can_approve_discounts, can_view_analytics)
-// don't map onto uniform create/read/update/delete slots at all.
+// Grouped by resource area, not CRUD — capabilities like can_approve_discounts
+// and can_view_analytics don't map onto create/read/update/delete slots.
 export function PermissionChecklist({
   value,
   onChange,

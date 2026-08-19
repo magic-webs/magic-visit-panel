@@ -7,13 +7,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTriggerBuild } from "@/hooks/use-trigger-build";
 
-// No build-trigger infrastructure exists yet by default (no CI, no
-// server-held EAS token) — the manual deep-link to the project's own EAS
-// dashboard always works and needs no setup. The automated path
-// (POST /api/tenants/[tenantId]/build -> dispatches magic-visit-app's
-// .github/workflows/eas-build.yml) additionally needs GITHUB_TOKEN set on
-// the panel; if it isn't, the mutation comes back with a 501 and this falls
-// back to just showing the manual link, same as before automation existed.
+// Manual EAS-dashboard link always works with no setup. The automated path
+// (dispatches magic-visit-app's eas-build.yml) needs GITHUB_TOKEN on the
+// panel — without it the mutation 501s and this falls back to the manual link.
 const EXPO_ACCOUNT = process.env.NEXT_PUBLIC_EXPO_ACCOUNT ?? "";
 const EXPO_PROJECT_SLUG = process.env.NEXT_PUBLIC_EXPO_PROJECT_SLUG || "urmil-jewellers-ramnagar";
 

@@ -7,12 +7,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTriggerWebDeploy } from "@/hooks/use-trigger-web-deploy";
 
-// Triggers magic-visit-app's .github/workflows/web-deploy.yml — same
-// GITHUB_TOKEN-gated pattern as CreateApkButton. `cloudflareProject`
-// defaults server-side to this tenant's own slug (see
-// app/api/tenants/[tenantId]/deploy-web/route.ts) — every tenant needs its
-// own Cloudflare Pages project, not one shared project every tenant
-// overwrites on deploy.
+// Triggers web-deploy.yml (same GITHUB_TOKEN gate as CreateApkButton);
+// cloudflareProject defaults to the tenant's own slug so tenants don't share one Pages project.
 export function DeployWebButton({ tenantId, tenantSlug }: { tenantId: string; tenantSlug: string }) {
   const deploy = useTriggerWebDeploy(tenantId);
   const notConfigured = deploy.isError && /GITHUB_TOKEN|501/i.test(deploy.error.message);

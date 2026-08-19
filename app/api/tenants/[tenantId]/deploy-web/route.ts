@@ -8,10 +8,7 @@ const GITHUB_REPO = process.env.MOBILE_REPO_NAME || "magic-visit-app";
 const GITHUB_REF = process.env.MOBILE_REPO_REF || "main";
 const WORKFLOW_FILE = "web-deploy.yml";
 
-// Dispatches magic-visit-app's .github/workflows/web-deploy.yml — same
-// pattern and same GITHUB_TOKEN as .../build/route.ts (the EAS APK
-// trigger), just a different workflow file. See that route's comments for
-// the full rationale.
+// Same GitHub-dispatch pattern and GITHUB_TOKEN as build/route.ts (the EAS APK trigger), just a different workflow file.
 export async function POST(request: Request, { params }: RouteContext) {
   const guard = checkPanelRequestHeader(request);
   if (guard) return guard;
@@ -34,10 +31,7 @@ export async function POST(request: Request, { params }: RouteContext) {
   if (!tenantSlug) {
     return NextResponse.json({ error: "Missing tenantSlug." }, { status: 400 });
   }
-  // Defaults to the tenant's OWN slug, not a single shared project name —
-  // every tenant needs its own Cloudflare Pages project, or they'd overwrite
-  // each other's deployed site on every deploy. Still overridable via the
-  // request body if a tenant's project is deliberately named differently.
+  // Defaults to the tenant's own slug — each tenant needs its own Cloudflare Pages project, or deploys would overwrite each other.
   const cloudflareProject = typeof body?.cloudflareProject === "string" ? body.cloudflareProject : tenantSlug;
 
   const dispatchUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches`;

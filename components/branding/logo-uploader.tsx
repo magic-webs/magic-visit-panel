@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import type { LogoSlot } from "@/hooks/use-appearance-draft";
 
 const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
-const MAX_SIZE_BYTES = 2 * 1024 * 1024; // 2MB
+const MAX_SIZE_BYTES = 2 * 1024 * 1024;
 
 function useFileUrl(fileId: string | undefined) {
   const { data } = db.useQuery(fileId ? { $files: { $: { where: { id: fileId } } } } : null);
@@ -75,9 +75,7 @@ export function LogoUploader({
 
   return (
     <div className="flex flex-col gap-2">
-      {/* Stacked, not side-by-side — this sits in a 3-up grid inside a
-          column capped at max-w-md, so "Logo (light)" + "Shown on light
-          backgrounds" never reliably fit on one row. */}
+      {/* Stacked, not side-by-side — a 3-up grid in a max-w-md column is too narrow for label + description on one row. */}
       <div className="flex flex-col gap-0.5">
         <p className="text-sm font-medium">{label}</p>
         <p className="text-xs text-muted-foreground">{description}</p>
