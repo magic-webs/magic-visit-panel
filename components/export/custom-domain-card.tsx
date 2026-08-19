@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Globe, Plus, Trash2, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
+import { Globe, Plus, Trash2, CheckCircle2, Clock, AlertTriangle, Copy, Check } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -144,17 +144,29 @@ function DomainRow({
       </div>
 
       {domain.status !== "active" && (
-        <div className="rounded-md bg-muted p-2 text-xs text-muted-foreground">
-          <p>Add this DNS record at your domain&apos;s provider:</p>
-          <code className="mt-1 block rounded bg-background px-2 py-1">
-            CNAME {domain.name} → {tenantSlug}.pages.dev
-          </code>
+        <div className="rounded-md bg-muted p-3 text-xs text-muted-foreground">
+          <p className="mb-2">Add this record at your domain&apos;s DNS provider:</p>
+          <div className="rounded-md border bg-background px-3">
+            <DnsFieldRow label="Type" value="CNAME" />
+            <DnsFieldRow label="Name" value={domain.name} />
+            <DnsFieldRow label="Target" value={`${tenantSlug}.pages.dev`} />
+            <DnsFieldRow label="Proxy status" value="Proxied" />
+            <DnsFieldRow label="TTL" value="Auto" last />
+          </div>
+          <p className="mt-2">
+            &quot;Proxy status&quot; only applies if your domain&apos;s DNS is also on Cloudflare — leave it Proxied
+            (orange cloud), not DNS only. If your provider asks for Name relative to your zone (Cloudflare&apos;s own
+            dashboard does), enter just the subdomain part rather than the full name above.
+          </p>
+
           {needsTxt && domain.validation_data?.txt_name && (
             <>
-              <p className="mt-2">Then a TXT record to prove ownership:</p>
-              <code className="mt-1 block rounded bg-background px-2 py-1 break-all">
-                TXT {domain.validation_data.txt_name} → {domain.validation_data.txt_value}
-              </code>
+              <p className="mt-3 mb-2">Then a TXT record to prove ownership:</p>
+              <div className="rounded-md border bg-background px-3">
+                <DnsFieldRow label="Type" value="TXT" />
+                <DnsFieldRow label="Name" value={domain.validation_data.txt_name} />
+                <DnsFieldRow label="Value" value={domain.validation_data.txt_value ?? ""} last />
+              </div>
             </>
           )}
         </div>
@@ -166,5 +178,29 @@ function DomainRow({
         </p>
       )}
     </li>
+  );
+}
+
+// One labeled DNS-record field with a copy button — mirrors the Type/Name/
+// Target/Proxy status/TTL layout of Cloudflare's own "Add record" dialog so
+// values can be copied straight in without parsing a single CNAME line.
+function DnsFieldRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
+  const [copied, setCopied] = React.useState(false);
+
+  function handleCopy() {
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  }
+
+  return (
+    <div className={`flex items-center gap-2 py-1.5 ${last ? "" : "border-b"}`}>
+      <span className="w-24 shrink-0 text-muted-foreground">{label}</span>
+      <code className="min-w-0 flex-1 truncate font-mono text-foreground">{value}</code>
+      <Button variant="ghost" size="icon-sm" onClick={handleCopy} aria-label={`Copy ${label}`}>
+        {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+      </Button>
+    </div>
   );
 }
