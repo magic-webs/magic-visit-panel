@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Globe, Plus, Trash2, CheckCircle2, Clock, AlertTriangle, Copy, Check } from "lucide-react";
+import { Globe, Plus, Trash2, CheckCircle2, Clock, AlertTriangle, Copy, Check, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -114,6 +114,16 @@ export function CustomDomainCard({ tenantId, tenantSlug }: { tenantId: string; t
   );
 }
 
+// Most DNS providers (Cloudflare's own dashboard included, per its "Use @
+// for root" Name field) want a record's Name relative to the zone, not the
+// full hostname — e.g. "magicboooot", not "magicboooot.magicxbot.in". Assumes
+// the last two labels are the registrable domain, which covers the common
+// single-level-subdomain case but not multi-part TLDs like ".co.uk".
+function relativeName(hostname: string): string {
+  const parts = hostname.split(".");
+  return parts.length > 2 ? parts.slice(0, -2).join(".") : hostname;
+}
+
 function DomainRow({
   domain,
   tenantSlug,
@@ -132,7 +142,15 @@ function DomainRow({
     <li className="flex flex-col gap-2 rounded-lg border p-3">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <span className="truncate font-medium text-sm">{domain.name}</span>
+          <a
+            href={`https://${domain.name}`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex min-w-0 items-center gap-1 truncate font-medium text-sm hover:underline"
+          >
+            <span className="truncate">{domain.name}</span>
+            <ExternalLink className="size-3 shrink-0 text-muted-foreground" />
+          </a>
           <Badge variant={STATUS_VARIANT[domain.status] ?? "outline"} className="gap-1">
             <Icon className="size-3" />
             {domain.status}
@@ -148,15 +166,15 @@ function DomainRow({
           <p className="mb-2">Add this record at your domain&apos;s DNS provider:</p>
           <div className="rounded-md border bg-background px-3">
             <DnsFieldRow label="Type" value="CNAME" />
-            <DnsFieldRow label="Name" value={domain.name} />
+            <DnsFieldRow label="Name" value={relativeName(domain.name)} />
             <DnsFieldRow label="Target" value={`${tenantSlug}.pages.dev`} />
             <DnsFieldRow label="Proxy status" value="Proxied" />
             <DnsFieldRow label="TTL" value="Auto" last />
           </div>
           <p className="mt-2">
             &quot;Proxy status&quot; only applies if your domain&apos;s DNS is also on Cloudflare — leave it Proxied
-            (orange cloud), not DNS only. If your provider asks for Name relative to your zone (Cloudflare&apos;s own
-            dashboard does), enter just the subdomain part rather than the full name above.
+            (orange cloud), not DNS only. A few providers want the Name field as the full hostname instead of just
+            the subdomain — if the value above doesn&apos;t validate, use <code>{domain.name}</code> in full instead.
           </p>
 
           {needsTxt && domain.validation_data?.txt_name && (
@@ -164,7 +182,7 @@ function DomainRow({
               <p className="mt-3 mb-2">Then a TXT record to prove ownership:</p>
               <div className="rounded-md border bg-background px-3">
                 <DnsFieldRow label="Type" value="TXT" />
-                <DnsFieldRow label="Name" value={domain.validation_data.txt_name} />
+                <DnsFieldRow label="Name" value={relativeName(domain.validation_data.txt_name)} />
                 <DnsFieldRow label="Value" value={domain.validation_data.txt_value ?? ""} last />
               </div>
             </>
