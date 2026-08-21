@@ -34,6 +34,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -177,12 +178,14 @@ function OperatorMenu() {
         <ChevronsUpDownIcon className="ml-auto size-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="top" className="w-56">
-        <DropdownMenuLabel className="flex flex-col gap-1">
-          <span className="font-medium text-foreground">{operator.name}</span>
-          <Badge variant="secondary" className="w-fit">
-            {operator.role === "super_admin" ? "Super Admin" : "Tenant Admin"}
-          </Badge>
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="flex flex-col gap-1">
+            <span className="font-medium text-foreground">{operator.name}</span>
+            <Badge variant="secondary" className="w-fit">
+              {operator.role === "super_admin" ? "Super Admin" : "Tenant Admin"}
+            </Badge>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" disabled={isLoggingOut} onClick={() => logout()}>
           <LogOutIcon /> Sign out
